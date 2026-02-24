@@ -7,6 +7,8 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overscroll-behavior-y: none;
 }
 
 /* ═══ Header ═══ */
@@ -16,6 +18,7 @@ body {
   z-index: 100;
   background: rgba(10, 10, 15, 0.88);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
@@ -35,7 +38,7 @@ body {
   white-space: nowrap;
 }
 
-/* ═══ Nav ═══ */
+/* ═══ Nav (desktop) ═══ */
 .header-nav {
   display: flex;
   gap: 0.3rem;
@@ -83,6 +86,11 @@ body {
 
 .btn-link:hover { color: #e4e4e8; border-color: rgba(255, 255, 255, 0.15); }
 
+/* ═══ Mobile bottom nav ═══ */
+.mobile-bottom-nav {
+  display: none;
+}
+
 /* ═══ Layout ═══ */
 .admin-main {
   max-width: 860px;
@@ -112,13 +120,20 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* About view has no subviews, style it directly */
 #view-about {
   padding: 1.5rem 0 4rem;
   flex-direction: column;
   gap: 1rem;
 }
 #view-about.active { display: flex; }
+
+/* Page view also has no subviews */
+#view-page {
+  padding: 1.5rem 0 4rem;
+  flex-direction: column;
+  gap: 1rem;
+}
+#view-page.active { display: flex; }
 
 /* ═══ View header ═══ */
 .view-header {
@@ -190,7 +205,7 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* ═══ Item list (compact rows) ═══ */
+/* ═══ Item list ═══ */
 .item-list {
   display: flex;
   flex-direction: column;
@@ -553,6 +568,7 @@ input:focus, textarea:focus {
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -560,6 +576,7 @@ input:focus, textarea:focus {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;
+  padding: 1rem;
 }
 
 .confirm-overlay.active { opacity: 1; pointer-events: auto; }
@@ -569,8 +586,9 @@ input:focus, textarea:focus {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   padding: 1.5rem;
-  min-width: 300px;
+  min-width: 280px;
   max-width: 400px;
+  width: 100%;
   transform: scale(0.95);
   transition: transform 0.2s;
 }
@@ -604,6 +622,7 @@ input:focus, textarea:focus {
   align-items: center;
   justify-content: center;
   background: #0a0a0f;
+  padding: 1rem;
 }
 .auth-box {
   width: 100%;
@@ -634,12 +653,12 @@ input:focus, textarea:focus {
 }
 #authForm input[type="password"] {
   width: 100%;
-  padding: 0.7rem 1rem;
+  padding: 0.75rem 1rem;
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-family: inherit;
   outline: none;
   margin-bottom: 0.75rem;
@@ -720,7 +739,7 @@ input:focus, textarea:focus {
   max-width: 400px;
   background: #16161d;
   border-radius: 20px 20px 0 0;
-  padding: 1.8rem 1.5rem 2.2rem;
+  padding: 1.8rem 1.5rem calc(1.8rem + env(safe-area-inset-bottom, 0px));
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   position: relative;
@@ -792,26 +811,281 @@ input:focus, textarea:focus {
   font-weight: 600;
 }
 
-/* ═══ Responsive ═══ */
+/* ═══════════════════════════════════════
+   MOBILE RESPONSIVE (<=700px)
+   ═══════════════════════════════════════ */
 @media (max-width: 700px) {
-  .admin-header-inner {
-    padding: 0.65rem 1rem;
-    gap: 0.6rem;
-    flex-wrap: wrap;
+  html {
+    height: -webkit-fill-available;
   }
+
+  body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ── Header: compact, single row ── */
+  .admin-header-inner {
+    padding: 0.6rem 1rem;
+    gap: 0.5rem;
+  }
+
   .header-left h1 { font-size: 0.85rem; }
-  .header-nav { order: 3; width: 100%; justify-content: center; }
-  .nav-pill { font-size: 0.72rem; padding: 0.35rem 0.7rem; }
-  .nav-pill svg { display: none; }
-  .admin-main { padding: 0 1rem; }
-  .subview, #view-about { padding: 1rem 0 3rem; }
-  .admin-section { padding: 1.1rem; }
-  .form-grid { grid-template-columns: 1fr; }
-  .item-row-main { padding: 0.75rem 0.75rem; }
-  .item-row-actions { padding-right: 0.4rem; }
-  .view-header { flex-wrap: wrap; }
-  .btn-add-top { margin-left: 0; }
-  .btn-install { font-size: 0 !important; padding: 0.4rem !important; gap: 0 !important; }
+
+  .header-nav {
+    display: none;
+  }
+
+  .btn-link {
+    font-size: 0.72rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 8px;
+  }
+
+  .btn-install {
+    font-size: 0 !important;
+    padding: 0.4rem !important;
+    gap: 0 !important;
+  }
   .btn-install svg { width: 16px !important; height: 16px !important; }
-  .ios-guide { padding: 1.5rem 1.2rem 2rem; }
+
+  /* ── Mobile bottom nav bar ── */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(10, 10, 15, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 0.4rem 0.5rem calc(0.4rem + env(safe-area-inset-bottom, 0px));
+    justify-content: space-around;
+    align-items: center;
+    gap: 0;
+  }
+
+  .mob-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    background: none;
+    border: none;
+    color: #44444d;
+    font-family: inherit;
+    font-size: 0.62rem;
+    font-weight: 500;
+    padding: 0.35rem 0.6rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    min-width: 56px;
+  }
+
+  .mob-nav-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke-width: 1.8;
+  }
+
+  .mob-nav-btn.active {
+    color: #e03e3e;
+    background: rgba(224, 62, 62, 0.08);
+  }
+
+  .mob-nav-btn:active {
+    transform: scale(0.92);
+  }
+
+  /* ── Main layout ── */
+  .admin-main {
+    padding: 0 0.75rem;
+  }
+
+  .subview, #view-about, #view-page {
+    padding: 0.75rem 0 2rem;
+    gap: 0.75rem;
+  }
+
+  /* ── View header ── */
+  .view-header {
+    gap: 0.6rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .view-header h2 { font-size: 1.05rem; }
+
+  .btn-add-top {
+    margin-left: auto;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.75rem;
+  }
+
+  /* ── Sections (cards) ── */
+  .admin-section {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .section-head-mini { margin-bottom: 0.75rem; }
+
+  /* ── Form ── */
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  input, textarea {
+    padding: 0.7rem 0.85rem;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+
+  label {
+    font-size: 0.65rem;
+  }
+
+  /* ── Avatar ── */
+  .avatar-row {
+    gap: 1rem;
+  }
+
+  .avatar-preview {
+    width: 64px;
+    height: 64px;
+  }
+
+  .avatar-letter { font-size: 1.6rem; }
+
+  .avatar-controls > .btn-upload,
+  .avatar-controls > .btn-remove-avatar {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.75rem;
+  }
+
+  /* ── Item list ── */
+  .item-list { gap: 0.4rem; }
+
+  .item-row {
+    border-radius: 12px;
+  }
+
+  .item-row-main {
+    padding: 0.85rem 0.75rem;
+    gap: 0.6rem;
+  }
+
+  .item-name { font-size: 0.85rem; }
+  .item-price { font-size: 0.7rem; }
+
+  .item-row-actions {
+    gap: 0.15rem;
+    padding-right: 0.35rem;
+  }
+
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  /* ── View footer (sticky save bar) ── */
+  .view-footer {
+    position: sticky;
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    background: rgba(10, 10, 15, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    margin: 0 -1rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0;
+    z-index: 10;
+  }
+
+  .view-footer .btn-save {
+    flex: 1;
+    justify-content: center;
+    padding: 0.75rem 1.2rem;
+    font-size: 0.85rem;
+  }
+
+  .view-footer .btn-outline {
+    padding: 0.75rem 1.2rem;
+    font-size: 0.85rem;
+  }
+
+  /* ── Add button ── */
+  .btn-add {
+    padding: 0.95rem;
+    border-radius: 12px;
+  }
+
+  /* ── Toast: above bottom nav ── */
+  .toast {
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ── Confirm dialog ── */
+  .confirm-box {
+    margin: 0 1rem;
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .confirm-box p { font-size: 0.92rem; }
+
+  .btn-cancel, .btn-danger {
+    padding: 0.6rem 1.1rem;
+    font-size: 0.82rem;
+  }
+
+  /* ── Auth ── */
+  .auth-box {
+    padding: 2rem 1.5rem;
+  }
+
+  #authForm input[type="password"] {
+    padding: 0.8rem 1rem;
+    font-size: 16px;
+  }
+
+  .auth-box .btn-save {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.88rem;
+  }
+
+  /* ── Toggle ── */
+  .toggle-row input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+  }
+
+  .toggle-label { font-size: 0.88rem; }
+  .toggle-hint { font-size: 0.7rem; }
+
+  /* ── iOS guide ── */
+  .ios-guide { padding: 1.5rem 1.2rem calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* ═══ Extra small phones (<=380px) ═══ */
+@media (max-width: 380px) {
+  .admin-main { padding: 0 0.5rem; }
+  .admin-section { padding: 0.85rem; }
+  .view-header h2 { font-size: 0.95rem; }
+
+  .mob-nav-btn {
+    font-size: 0.58rem;
+    padding: 0.3rem 0.35rem;
+    min-width: 48px;
+  }
+
+  .mob-nav-btn svg {
+    width: 20px;
+    height: 20px;
+  }
 }
