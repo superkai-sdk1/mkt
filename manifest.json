@@ -1,0 +1,29 @@
+{
+  "name": "MKT Admin — Панель управления",
+  "short_name": "MKT Admin",
+  "description": "Админ-панель для управления сайтом-визиткой",
+  "start_url": "/admin.html",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#e03e3e",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

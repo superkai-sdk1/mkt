@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MKT Admin">
+  <title>Админ-панель</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.svg">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- Auth screen -->
+  <div class="auth-screen" id="authScreen">
+    <div class="auth-box">
+      <div class="auth-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="32" height="32"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+      </div>
+      <h2 id="authTitle">Вход в админку</h2>
+      <p class="auth-hint" id="authHint">Введите пароль для доступа</p>
+      <form id="authForm" onsubmit="return handleAuth(event)">
+        <input type="password" id="authPass" placeholder="Пароль" autocomplete="current-password" required>
+        <input type="password" id="authPassConfirm" placeholder="Подтвердите пароль" autocomplete="new-password" style="display:none">
+        <div class="auth-error" id="authError"></div>
+        <button type="submit" class="btn-save" id="authBtn" style="width:100%;justify-content:center">Войти</button>
+      </form>
+      <button class="auth-logout-link" id="authResetLink" onclick="resetPassword()" style="display:none">Сбросить пароль</button>
+    </div>
+  </div>
+
+  <div id="adminApp" style="display:none">
+
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <div class="header-left">
+        <h1>Админ-панель</h1>
+      </div>
+      <nav class="header-nav">
+        <button class="nav-pill active" data-view="view-page">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+          Главная
+        </button>
+        <button class="nav-pill" data-view="view-about">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0"/></svg>
+          Обо мне
+        </button>
+        <button class="nav-pill" data-view="view-services">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z"/></svg>
+          Услуги
+        </button>
+        <button class="nav-pill" data-view="view-channels">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+          Каналы
+        </button>
+      </nav>
+      <button class="btn-link btn-install" id="btnInstall" onclick="installPWA()" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+        Установить
+      </button>
+      <a href="index.html" class="btn-link" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+        Сайт
+      </a>
+      <button class="btn-link btn-logout" onclick="logout()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+
+    <!-- ═══ View: Главная ═══ -->
+    <div class="admin-view active" id="view-page">
+      <div class="view-header">
+        <h2>Главная страница</h2>
+        <span class="section-badge">Контент</span>
+      </div>
+
+      <section class="admin-section">
+        <div class="section-head-mini"><h3>Шапка (Hero)</h3></div>
+        <div class="form-grid">
+          <div class="field full"><label>Бейдж</label><input type="text" id="heroBadge" placeholder="Открыт для новых клиентов"></div>
+          <div class="field full"><label>Заголовок</label><input type="text" id="heroTitle" placeholder="Продвижение в соцсетях"></div>
+          <div class="field full"><label>Подзаголовок</label><textarea rows="2" id="heroSubtitle" placeholder="Аудит, стратегия и разбор..."></textarea></div>
+          <div class="field"><label>Текст кнопки</label><input type="text" id="heroCtaText" placeholder="Смотреть услуги"></div>
+        </div>
+      </section>
+
+      <section class="admin-section">
+        <div class="section-head-mini"><h3>Блок услуг — заголовки</h3></div>
+        <div class="form-grid">
+          <div class="field full"><label>Метка</label><input type="text" id="secLabel" placeholder="Что я предлагаю"></div>
+          <div class="field full"><label>Заголовок</label><input type="text" id="secTitle" placeholder="Услуги и цены"></div>
+          <div class="field full"><label>Подзаголовок</label><textarea rows="2" id="secSubtitle" placeholder="Выберите подходящий формат..."></textarea></div>
+          <div class="field"><label>Вкладка 1</label><input type="text" id="secTab1" placeholder="Услуги"></div>
+          <div class="field"><label>Вкладка 2</label><input type="text" id="secTab2" placeholder="Закрытые каналы"></div>
+        </div>
+      </section>
+
+      <section class="admin-section">
+        <div class="section-head-mini"><h3>Призыв к действию (CTA)</h3></div>
+        <div class="form-grid">
+          <div class="field full"><label>Заголовок</label><input type="text" id="ctaTitle" placeholder="Остались вопросы?"></div>
+          <div class="field full"><label>Описание</label><textarea rows="2" id="ctaSubtitle" placeholder="Напишите мне..."></textarea></div>
+          <div class="field"><label>Текст кнопки</label><input type="text" id="ctaBtnText" placeholder="Написать в Telegram"></div>
+          <div class="field"><label>Ссылка Telegram</label><input type="url" id="ctaTgUrl" placeholder="https://t.me/MktRahim"></div>
+        </div>
+      </section>
+
+      <div class="view-footer">
+        <button class="btn-save" onclick="savePage()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+          Сохранить страницу
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ View: About ═══ -->
+    <div class="admin-view" id="view-about">
+      <div class="view-header">
+        <h2>Обо мне</h2>
+        <span class="section-badge">Профиль</span>
+      </div>
+      <section class="admin-section">
+        <div class="avatar-row">
+          <div class="avatar-preview" id="avatarPreview">
+            <span class="avatar-letter" id="avatarLetter">R</span>
+            <img class="avatar-img" id="avatarImg" alt="">
+          </div>
+          <div class="avatar-controls">
+            <label class="btn-upload" for="avatarInput">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
+              Загрузить фото
+            </label>
+            <input type="file" id="avatarInput" accept="image/*" hidden>
+            <button class="btn-remove-avatar" id="avatarRemoveBtn" onclick="removeAvatar()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+              Удалить
+            </button>
+            <p class="avatar-hint">JPG, PNG или WebP, до 2 МБ.</p>
+          </div>
+        </div>
+        <div class="form-grid" style="margin-top:1.25rem">
+          <div class="field">
+            <label for="aboutName">Имя</label>
+            <input type="text" id="aboutName" placeholder="Rahim">
+          </div>
+          <div class="field">
+            <label for="aboutInitial">Инициал (без фото)</label>
+            <input type="text" id="aboutInitial" maxlength="2" placeholder="R">
+          </div>
+          <div class="field full">
+            <label for="aboutBio">Описание</label>
+            <textarea id="aboutBio" rows="4" placeholder="SMM-специалист и маркетолог..."></textarea>
+          </div>
+        </div>
+      </section>
+      <section class="admin-section">
+        <div class="section-head-mini"><h3>Статистика</h3></div>
+        <div class="form-grid">
+          <div class="field"><label>Значение</label><input type="text" id="aboutStat1Value" placeholder="50+"></div>
+          <div class="field"><label>Подпись</label><input type="text" id="aboutStat1Label" placeholder="проектов"></div>
+          <div class="field"><label>Значение</label><input type="text" id="aboutStat2Value" placeholder="3+"></div>
+          <div class="field"><label>Подпись</label><input type="text" id="aboutStat2Label" placeholder="года опыта"></div>
+          <div class="field"><label>Значение</label><input type="text" id="aboutStat3Value" placeholder="100%"></div>
+          <div class="field"><label>Подпись</label><input type="text" id="aboutStat3Label" placeholder="индивидуальный подход"></div>
+        </div>
+      </section>
+      <div class="view-footer">
+        <button class="btn-save" onclick="saveAbout()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+          Сохранить профиль
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ View: Services ═══ -->
+    <div class="admin-view" id="view-services">
+      <!-- List subview -->
+      <div class="subview active" id="servicesList-list">
+        <div class="view-header">
+          <h2>Услуги</h2>
+          <span class="section-badge" id="servicesCount">0</span>
+          <button class="btn-add-top" onclick="addItem('services')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Добавить
+          </button>
+        </div>
+        <div id="servicesListCards" class="item-list"></div>
+        <button class="btn-add" onclick="addItem('services')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Добавить услугу
+        </button>
+      </div>
+      <!-- Edit subview -->
+      <div class="subview" id="servicesList-edit">
+        <div class="view-header">
+          <button class="btn-back" onclick="closeEdit('services')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
+          </button>
+          <h2 id="servicesEditTitle">Редактирование</h2>
+        </div>
+        <section class="admin-section">
+          <div class="form-grid">
+            <div class="field full"><label>Название</label><input type="text" id="servicesF-title"></div>
+            <div class="field"><label>Цена</label><input type="text" id="servicesF-price"></div>
+            <div class="field full"><label>Короткое описание (карточка)</label><textarea rows="3" id="servicesF-shortDesc"></textarea></div>
+            <div class="field full"><label>Полное описание (модалка)</label><textarea rows="4" id="servicesF-desc"></textarea></div>
+          </div>
+        </section>
+        <section class="admin-section">
+          <label class="toggle-row">
+            <input type="checkbox" id="servicesF-featured" onchange="toggleFeatured('services')">
+            <span class="toggle-label">Широкая карточка</span>
+            <span class="toggle-hint">Карточка растягивается на всю ширину с акцентным фоном</span>
+          </label>
+          <div class="featured-fields" id="servicesF-featuredFields" style="display:none">
+            <div class="form-grid" style="margin-top:1rem">
+              <div class="field full"><label>Бейдж</label><input type="text" id="servicesF-badge" placeholder="AI-инструмент"></div>
+            </div>
+          </div>
+        </section>
+        <div class="view-footer">
+          <button class="btn-save" onclick="saveEditItem('services')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            Сохранить
+          </button>
+          <button class="btn-outline" onclick="closeEdit('services')">Отмена</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ View: Channels ═══ -->
+    <div class="admin-view" id="view-channels">
+      <!-- List subview -->
+      <div class="subview active" id="channelsList-list">
+        <div class="view-header">
+          <h2>Закрытые каналы</h2>
+          <span class="section-badge" id="channelsCount">0</span>
+          <button class="btn-add-top" onclick="addItem('channels')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Добавить
+          </button>
+        </div>
+        <div id="channelsListCards" class="item-list"></div>
+        <button class="btn-add" onclick="addItem('channels')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Добавить канал
+        </button>
+      </div>
+      <!-- Edit subview -->
+      <div class="subview" id="channelsList-edit">
+        <div class="view-header">
+          <button class="btn-back" onclick="closeEdit('channels')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
+          </button>
+          <h2 id="channelsEditTitle">Редактирование</h2>
+        </div>
+        <section class="admin-section">
+          <div class="form-grid">
+            <div class="field full"><label>Название</label><input type="text" id="channelsF-title"></div>
+            <div class="field"><label>Цена</label><input type="text" id="channelsF-price"></div>
+            <div class="field full"><label>Короткое описание (карточка)</label><textarea rows="3" id="channelsF-shortDesc"></textarea></div>
+            <div class="field full"><label>Полное описание (модалка)</label><textarea rows="4" id="channelsF-desc"></textarea></div>
+          </div>
+        </section>
+        <section class="admin-section">
+          <label class="toggle-row">
+            <input type="checkbox" id="channelsF-featured" onchange="toggleFeatured('channels')">
+            <span class="toggle-label">Широкая карточка</span>
+            <span class="toggle-hint">Карточка растягивается на всю ширину с акцентным фоном</span>
+          </label>
+          <div class="featured-fields" id="channelsF-featuredFields" style="display:none">
+            <div class="form-grid" style="margin-top:1rem">
+              <div class="field full"><label>Бейдж</label><input type="text" id="channelsF-badge" placeholder="AI-инструмент"></div>
+            </div>
+          </div>
+        </section>
+        <div class="view-footer">
+          <button class="btn-save" onclick="saveEditItem('channels')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            Сохранить
+          </button>
+          <button class="btn-outline" onclick="closeEdit('channels')">Отмена</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  </div><!-- /adminApp -->
+
+  <div class="toast" id="toast">Сохранено</div>
+
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <p id="confirmText">Удалить?</p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" id="confirmNo">Отмена</button>
+        <button class="btn-danger" id="confirmYes">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ═══ API helper ═══ */
+    const API = {
+      token: sessionStorage.getItem("adminToken") || "",
+      async get(url) { const r = await fetch(url); if (!r.ok) throw new Error(r.status); return r.json(); },
+      async post(url, body) {
+        const r = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + this.token },
+          body: JSON.stringify(body)
+        });
+        if (!r.ok) throw new Error(r.status);
+        return r.json();
+      },
+      async del(url) {
+        const r = await fetch(url, { method: "DELETE", headers: { "Authorization": "Bearer " + this.token } });
+        if (!r.ok) throw new Error(r.status);
+        return r.json();
+      },
+      async upload(url, file) {
+        const fd = new FormData();
+        fd.append("avatar", file);
+        const r = await fetch(url, { method: "POST", headers: { "Authorization": "Bearer " + this.token }, body: fd });
+        if (!r.ok) throw new Error(r.status);
+        return r.json();
+      }
+    };
+
+    const state = { services: [], channels: [], editIdx: { services: -1, channels: -1 } };
+    let hasAvatarOnServer = false;
+
+    function esc(s) { return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;"); }
+
+    /* ── View switching ── */
+    const pills = document.querySelectorAll(".nav-pill");
+    const views = document.querySelectorAll(".admin-view");
+
+    function switchView(viewId) {
+      pills.forEach(p => p.classList.toggle("active", p.dataset.view === viewId));
+      views.forEach(v => v.classList.toggle("active", v.id === viewId));
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+    pills.forEach(pill => pill.addEventListener("click", () => {
+      switchView(pill.dataset.view);
+      closeEdit("services"); closeEdit("channels");
+    }));
+
+    /* ── Toast / Confirm ── */
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg || "Сохранено";
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2000);
+    }
+
+    let confirmResolve = null;
+    function showConfirm(text) {
+      return new Promise(resolve => {
+        confirmResolve = resolve;
+        document.getElementById("confirmText").textContent = text;
+        document.getElementById("confirmOverlay").classList.add("active");
+      });
+    }
+    document.getElementById("confirmYes").onclick = () => { document.getElementById("confirmOverlay").classList.remove("active"); confirmResolve?.(true); };
+    document.getElementById("confirmNo").onclick = () => { document.getElementById("confirmOverlay").classList.remove("active"); confirmResolve?.(false); };
+
+    /* ── Render item list ── */
+    function renderList(section) {
+      const container = document.getElementById(section + "ListCards");
+      const items = state[section];
+      container.innerHTML = "";
+
+      items.forEach((item, i) => {
+        const row = document.createElement("div");
+        row.className = "item-row";
+        row.innerHTML = `
+          <div class="item-row-main" onclick="openEdit('${section}', ${i})">
+            <span class="item-num">${String(i + 1).padStart(2, "0")}</span>
+            <div class="item-info">
+              <span class="item-name">${esc(item.title) || "Без названия"}${item.featured ? ' <span class="item-featured-tag">wide</span>' : ""}</span>
+              <span class="item-price">${esc(item.price)}</span>
+            </div>
+            <svg class="item-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+          </div>
+          <div class="item-row-actions">
+            <button class="btn-icon btn-up" title="Вверх" onclick="event.stopPropagation(); moveItem('${section}', ${i}, -1)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+            </button>
+            <button class="btn-icon btn-down" title="Вниз" onclick="event.stopPropagation(); moveItem('${section}', ${i}, 1)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+            </button>
+            <button class="btn-icon btn-delete" title="Удалить" onclick="event.stopPropagation(); removeItem('${section}', ${i})">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+            </button>
+          </div>`;
+        container.appendChild(row);
+      });
+
+      const countEl = document.getElementById(section + "Count");
+      if (countEl) countEl.textContent = items.length;
+    }
+
+    /* ── Open / Close edit ── */
+    function openEdit(section, idx) {
+      state.editIdx[section] = idx;
+      const item = state[section][idx];
+      if (!item) return;
+
+      document.getElementById(section + "F-title").value = item.title || "";
+      document.getElementById(section + "F-price").value = item.price || "";
+      document.getElementById(section + "F-shortDesc").value = item.shortDesc || "";
+      document.getElementById(section + "F-desc").value = item.desc || "";
+
+      const cb = document.getElementById(section + "F-featured");
+      cb.checked = !!item.featured;
+      document.getElementById(section + "F-badge").value = item.badge || "";
+      document.getElementById(section + "F-featuredFields").style.display = item.featured ? "" : "none";
+
+      document.getElementById(section + "EditTitle").textContent = item.title || "Новая запись";
+
+      document.getElementById(section + "List-list").classList.remove("active");
+      document.getElementById(section + "List-edit").classList.add("active");
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    function toggleFeatured(section) {
+      const checked = document.getElementById(section + "F-featured").checked;
+      document.getElementById(section + "F-featuredFields").style.display = checked ? "" : "none";
+    }
+
+    function closeEdit(section) {
+      state.editIdx[section] = -1;
+      document.getElementById(section + "List-edit").classList.remove("active");
+      document.getElementById(section + "List-list").classList.add("active");
+    }
+
+    async function saveEditItem(section) {
+      const idx = state.editIdx[section];
+      if (idx < 0) return;
+      const item = state[section][idx];
+      item.title = document.getElementById(section + "F-title").value;
+      item.price = document.getElementById(section + "F-price").value;
+      item.shortDesc = document.getElementById(section + "F-shortDesc").value;
+      item.desc = document.getElementById(section + "F-desc").value;
+      item.featured = document.getElementById(section + "F-featured").checked;
+      item.badge = item.featured ? document.getElementById(section + "F-badge").value : "";
+
+      try {
+        await API.post("/api/" + section, state[section]);
+        renderList(section);
+        closeEdit(section);
+        showToast("Сохранено");
+      } catch { showToast("Ошибка сохранения"); }
+    }
+
+    /* ── Add / Remove / Move ── */
+    function addItem(section) {
+      state[section].push({ title: "", shortDesc: "", price: "", desc: "" });
+      renderList(section);
+      openEdit(section, state[section].length - 1);
+    }
+
+    async function removeItem(section, idx) {
+      const name = state[section][idx]?.title || "элемент";
+      if (!await showConfirm(`Удалить «${name}»?`)) return;
+      state[section].splice(idx, 1);
+      try {
+        await API.post("/api/" + section, state[section]);
+        renderList(section);
+        showToast("Удалено");
+      } catch { showToast("Ошибка удаления"); }
+    }
+
+    async function moveItem(section, idx, dir) {
+      const arr = state[section];
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= arr.length) return;
+      [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+      try {
+        await API.post("/api/" + section, arr);
+        renderList(section);
+      } catch { showToast("Ошибка"); }
+    }
+
+    /* ── Avatar ── */
+    const avatarPreview = document.getElementById("avatarPreview");
+    const avatarImg = document.getElementById("avatarImg");
+    const avatarLetter = document.getElementById("avatarLetter");
+    const avatarRemoveBtn = document.getElementById("avatarRemoveBtn");
+
+    function refreshAvatarPreview() {
+      if (hasAvatarOnServer) {
+        avatarImg.src = "/api/avatar?" + Date.now();
+        avatarPreview.classList.add("has-image");
+        avatarRemoveBtn.style.display = "";
+      } else {
+        avatarImg.removeAttribute("src");
+        avatarPreview.classList.remove("has-image");
+        avatarRemoveBtn.style.display = "none";
+        avatarLetter.textContent = document.getElementById("aboutInitial").value || "R";
+      }
+    }
+
+    document.getElementById("avatarInput").addEventListener("change", async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 2_000_000) { showToast("Макс. 2 МБ"); return; }
+      try {
+        await API.upload("/api/avatar", file);
+        hasAvatarOnServer = true;
+        refreshAvatarPreview();
+        showToast("Фото загружено");
+      } catch { showToast("Ошибка загрузки"); }
+      e.target.value = "";
+    });
+
+    async function removeAvatar() {
+      try {
+        await API.del("/api/avatar");
+        hasAvatarOnServer = false;
+        refreshAvatarPreview();
+        showToast("Фото удалено");
+      } catch { showToast("Ошибка"); }
+    }
+
+    document.getElementById("aboutInitial").addEventListener("input", e => {
+      if (!hasAvatarOnServer) avatarLetter.textContent = e.target.value || "R";
+    });
+
+    /* ── Page (hero + sections + cta) ── */
+    async function savePage() {
+      try {
+        await Promise.all([
+          API.post("/api/hero", {
+            badge: document.getElementById("heroBadge").value,
+            title: document.getElementById("heroTitle").value,
+            subtitle: document.getElementById("heroSubtitle").value,
+            ctaText: document.getElementById("heroCtaText").value,
+          }),
+          API.post("/api/sections", {
+            label: document.getElementById("secLabel").value,
+            title: document.getElementById("secTitle").value,
+            subtitle: document.getElementById("secSubtitle").value,
+            tab1: document.getElementById("secTab1").value,
+            tab2: document.getElementById("secTab2").value,
+          }),
+          API.post("/api/cta", {
+            title: document.getElementById("ctaTitle").value,
+            subtitle: document.getElementById("ctaSubtitle").value,
+            btnText: document.getElementById("ctaBtnText").value,
+            tgUrl: document.getElementById("ctaTgUrl").value,
+          })
+        ]);
+        showToast("Страница сохранена");
+      } catch { showToast("Ошибка сохранения"); }
+    }
+
+    /* ── About ── */
+    async function saveAbout() {
+      const about = {
+        name: document.getElementById("aboutName").value,
+        initial: document.getElementById("aboutInitial").value,
+        bio: document.getElementById("aboutBio").value,
+        stat1Value: document.getElementById("aboutStat1Value").value,
+        stat1Label: document.getElementById("aboutStat1Label").value,
+        stat2Value: document.getElementById("aboutStat2Value").value,
+        stat2Label: document.getElementById("aboutStat2Label").value,
+        stat3Value: document.getElementById("aboutStat3Value").value,
+        stat3Label: document.getElementById("aboutStat3Label").value,
+      };
+      try {
+        await API.post("/api/about", about);
+        showToast("Профиль сохранён");
+      } catch { showToast("Ошибка сохранения"); }
+    }
+
+    /* ── Init admin content (from server) ── */
+    async function initAdmin() {
+      try {
+        const data = await API.get("/api/data");
+
+        const h = data.hero || {};
+        document.getElementById("heroBadge").value = h.badge || "";
+        document.getElementById("heroTitle").value = h.title || "";
+        document.getElementById("heroSubtitle").value = h.subtitle || "";
+        document.getElementById("heroCtaText").value = h.ctaText || "";
+
+        const s = data.sections || {};
+        document.getElementById("secLabel").value = s.label || "";
+        document.getElementById("secTitle").value = s.title || "";
+        document.getElementById("secSubtitle").value = s.subtitle || "";
+        document.getElementById("secTab1").value = s.tab1 || "";
+        document.getElementById("secTab2").value = s.tab2 || "";
+
+        const c = data.cta || {};
+        document.getElementById("ctaTitle").value = c.title || "";
+        document.getElementById("ctaSubtitle").value = c.subtitle || "";
+        document.getElementById("ctaBtnText").value = c.btnText || "";
+        document.getElementById("ctaTgUrl").value = c.tgUrl || "";
+
+        const a = data.about || {};
+        document.getElementById("aboutName").value = a.name || "";
+        document.getElementById("aboutInitial").value = a.initial || "";
+        document.getElementById("aboutBio").value = a.bio || "";
+        document.getElementById("aboutStat1Value").value = a.stat1Value || "";
+        document.getElementById("aboutStat1Label").value = a.stat1Label || "";
+        document.getElementById("aboutStat2Value").value = a.stat2Value || "";
+        document.getElementById("aboutStat2Label").value = a.stat2Label || "";
+        document.getElementById("aboutStat3Value").value = a.stat3Value || "";
+        document.getElementById("aboutStat3Label").value = a.stat3Label || "";
+        avatarLetter.textContent = a.initial || "R";
+
+        hasAvatarOnServer = !!data.hasAvatar;
+        refreshAvatarPreview();
+
+        state.services = data.services || [];
+        state.channels = data.channels || [];
+        renderList("services");
+        renderList("channels");
+      } catch {
+        showToast("Ошибка загрузки данных");
+      }
+    }
+
+    /* ═══ Auth (server-based) ═══ */
+    async function hashStr(str) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    const authScreen = document.getElementById("authScreen");
+    const adminApp = document.getElementById("adminApp");
+    const authPass = document.getElementById("authPass");
+    const authPassConfirm = document.getElementById("authPassConfirm");
+    const authError = document.getElementById("authError");
+    const authTitle = document.getElementById("authTitle");
+    const authHint = document.getElementById("authHint");
+    const authBtn = document.getElementById("authBtn");
+    const authResetLink = document.getElementById("authResetLink");
+
+    (async function checkAuth() {
+      let hasPassword = false;
+      try {
+        const s = await API.get("/api/auth/status");
+        hasPassword = s.hasPassword;
+      } catch {}
+
+      if (!hasPassword) {
+        authTitle.textContent = "Создание пароля";
+        authHint.textContent = "Придумайте пароль для доступа к админке";
+        authBtn.textContent = "Создать пароль";
+        authPassConfirm.style.display = "";
+        authPass.autocomplete = "new-password";
+      } else {
+        authResetLink.style.display = "";
+      }
+
+      if (API.token && hasPassword) {
+        try {
+          const r = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ passwordHash: API.token })
+          });
+          if (r.ok) {
+            authScreen.style.display = "none";
+            adminApp.style.display = "";
+            await initAdmin();
+            return;
+          }
+        } catch {}
+        sessionStorage.removeItem("adminToken");
+        API.token = "";
+      }
+    })();
+
+    async function handleAuth(e) {
+      e.preventDefault();
+      authError.textContent = "";
+      const pass = authPass.value;
+      const hash = await hashStr(pass);
+
+      let hasPassword = false;
+      try {
+        const s = await API.get("/api/auth/status");
+        hasPassword = s.hasPassword;
+      } catch { authError.textContent = "Ошибка сервера"; return false; }
+
+      if (!hasPassword) {
+        if (pass.length < 4) { authError.textContent = "Минимум 4 символа"; return false; }
+        if (pass !== authPassConfirm.value) { authError.textContent = "Пароли не совпадают"; return false; }
+        try {
+          await fetch("/api/auth/setup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ passwordHash: hash })
+          });
+          API.token = hash;
+          sessionStorage.setItem("adminToken", hash);
+          authScreen.style.display = "none";
+          adminApp.style.display = "";
+          await initAdmin();
+        } catch { authError.textContent = "Ошибка сервера"; }
+        return false;
+      }
+
+      try {
+        const r = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ passwordHash: hash })
+        });
+        if (r.ok) {
+          API.token = hash;
+          sessionStorage.setItem("adminToken", hash);
+          authScreen.style.display = "none";
+          adminApp.style.display = "";
+          await initAdmin();
+        } else {
+          authError.textContent = "Неверный пароль";
+          authPass.value = "";
+          authPass.focus();
+        }
+      } catch { authError.textContent = "Ошибка сервера"; }
+      return false;
+    }
+
+    function logout() {
+      sessionStorage.removeItem("adminToken");
+      API.token = "";
+      location.reload();
+    }
+
+    async function resetPassword() {
+      const pass = prompt("Введите текущий пароль для сброса:");
+      if (!pass) return;
+      const hash = await hashStr(pass);
+      try {
+        const r = await fetch("/api/auth/reset", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ currentPasswordHash: hash })
+        });
+        if (r.ok) {
+          sessionStorage.removeItem("adminToken");
+          location.reload();
+        } else { alert("Неверный пароль"); }
+      } catch { alert("Ошибка сервера"); }
+    }
+
+    /* ═══ PWA: Install ═══ */
+    let deferredPrompt = null;
+    const btnInstall = document.getElementById("btnInstall");
+    const isIos = /iP(hone|ad|od)/.test(navigator.userAgent);
+    const isInStandalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+
+    if (!isInStandalone) {
+      if (isIos) {
+        btnInstall.style.display = "";
+      }
+      window.addEventListener("beforeinstallprompt", e => {
+        e.preventDefault();
+        deferredPrompt = e;
+        btnInstall.style.display = "";
+      });
+    }
+
+    function installPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => { deferredPrompt = null; btnInstall.style.display = "none"; });
+        return;
+      }
+      if (isIos) {
+        document.getElementById("iosGuide").classList.add("active");
+        return;
+      }
+    }
+
+    function closeIosGuide() {
+      document.getElementById("iosGuide").classList.remove("active");
+    }
+
+    window.addEventListener("appinstalled", () => { btnInstall.style.display = "none"; });
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    }
+  </script>
+
+  <!-- iOS install guide -->
+  <div class="ios-guide-overlay" id="iosGuide" onclick="if(event.target===this)closeIosGuide()">
+    <div class="ios-guide">
+      <button class="ios-guide-close" onclick="closeIosGuide()" aria-label="Закрыть">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+      <h3>Установка на iPhone</h3>
+      <div class="ios-steps">
+        <div class="ios-step" style="animation-delay:.1s">
+          <div class="ios-step-num">1</div>
+          <div class="ios-step-body">
+            <p>Нажмите
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18" style="vertical-align:middle;color:#e03e3e"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
+              <strong>Поделиться</strong> внизу Safari</p>
+          </div>
+        </div>
+        <div class="ios-step" style="animation-delay:.25s">
+          <div class="ios-step-num">2</div>
+          <div class="ios-step-body">
+            <p>Пролистайте вниз и нажмите<br><strong>«На экран Домой»</strong></p>
+          </div>
+        </div>
+        <div class="ios-step" style="animation-delay:.4s">
+          <div class="ios-step-num">3</div>
+          <div class="ios-step-body">
+            <p>Нажмите <strong>«Добавить»</strong> — готово!</p>
+          </div>
+        </div>
+      </div>
+      <button class="btn-save" onclick="closeIosGuide()" style="width:100%;justify-content:center;margin-top:1.2rem">Понятно</button>
+    </div>
+  </div>
+
+</body>
+</html>
