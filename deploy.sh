@@ -169,7 +169,7 @@ Environment=PORT=$APP_PORT
 NoNewPrivileges=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=$APP_DIR/data
+ReadWritePaths=$APP_DIR
 PrivateTmp=true
 
 [Install]
