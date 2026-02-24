@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
+const { execSync } = require("child_process");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -200,6 +201,58 @@ app.delete("/api/avatar", requireAuth, (_req, res) => {
   const file = findAvatar();
   if (file) fs.unlinkSync(path.join(DATA_DIR, file));
   res.json({ ok: true });
+});
+
+/* ── Update API ── */
+function git(cmd) {
+  return execSync(cmd, { cwd: __dirname, timeout: 60000, env: { ...process.env, HOME: __dirname } }).toString().trim();
+}
+
+app.get("/api/update/check", requireAuth, (_req, res) => {
+  try {
+    git("git fetch origin");
+    const local = git("git rev-parse HEAD");
+    const remote = git("git rev-parse origin/main");
+    const currentCommit = git("git log -1 --format='%h %s'");
+    const remoteCommit = git("git log -1 origin/main --format='%h %s'");
+    res.json({ hasUpdate: local !== remote, current: currentCommit, remote: remoteCommit });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.post("/api/update", requireAuth, (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.flushHeaders();
+
+  const send = (step, status, message) => {
+    res.write(`data: ${JSON.stringify({ step, status, message })}\n\n`);
+  };
+
+  try {
+    send(1, "running", "Получение обновлений...");
+    git("git fetch origin");
+    send(1, "done", "Обновления получены");
+
+    send(2, "running", "Применение изменений...");
+    git("git reset --hard origin/main");
+    const commit = git("git log -1 --format='%h %s'");
+    send(2, "done", "Версия: " + commit);
+
+    send(3, "running", "Установка зависимостей...");
+    execSync("npm install --production --silent", { cwd: __dirname, timeout: 120000, env: { ...process.env, HOME: __dirname } });
+    send(3, "done", "Зависимости обновлены");
+
+    send(4, "done", "Обновление завершено! Сервер перезапускается...");
+    res.end();
+
+    setTimeout(() => process.exit(0), 500);
+  } catch (e) {
+    send(0, "error", "Ошибка: " + e.message);
+    res.end();
+  }
 });
 
 app.use(express.static(__dirname));
