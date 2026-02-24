@@ -254,10 +254,10 @@ get_current_domain() {
 
 # ─── Prompt for domain ────────────────────────────────
 ask_domain() {
-  local current
+  local current domain
   current=$(get_current_domain 2>/dev/null || true)
   if [[ -n "$current" ]]; then
-    echo -e "${C}Текущий домен: ${B}$current${N}"
+    echo -e "${C}Текущий домен: ${B}$current${N}" >&2
     read -rp "Новый домен (Enter — оставить $current): " domain
     domain="${domain:-$current}"
   else
