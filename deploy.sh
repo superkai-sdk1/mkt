@@ -18,7 +18,7 @@ APP_NAME="mkt"
 APP_DIR="/opt/$APP_NAME"
 APP_USER="mkt"
 APP_PORT=3000
-REPO_URL="https://github.com/kaimichaelson/mkt.git"
+REPO_URL="https://github.com/superkai-sdk1/mkt.git"
 NODE_MAJOR=20
 BACKUP_DIR="/opt/${APP_NAME}-backups"
 
@@ -481,7 +481,7 @@ show_help() {
   echo -e "  ${R}uninstall${N}   Полное удаление"
   echo ""
   echo "Быстрая установка на чистом VPS:"
-  echo -e "  ${Y}curl -sL https://raw.githubusercontent.com/kaimichaelson/mkt/main/deploy.sh -o deploy.sh"
+  echo -e "  ${Y}curl -sL https://raw.githubusercontent.com/superkai-sdk1/mkt/main/deploy.sh -o deploy.sh"
   echo -e "  chmod +x deploy.sh"
   echo -e "  sudo ./deploy.sh install${N}"
   echo ""
