@@ -715,6 +715,97 @@ input:focus, textarea:focus {
   50% { box-shadow: 0 0 0 6px rgba(224, 62, 62, 0); }
 }
 
+/* ═══ Rich text editor ═══ */
+.rich-editor {
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.035);
+  transition: border-color 0.2s;
+}
+
+.rich-editor:focus-within {
+  border-color: rgba(224, 62, 62, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.rich-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 0.35rem 0.5rem;
+  background: rgba(255, 255, 255, 0.025);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.rich-btn {
+  width: 30px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: #7c7c86;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rich-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e4e4e8;
+}
+
+.rich-btn:active {
+  background: rgba(224, 62, 62, 0.15);
+  color: #e03e3e;
+}
+
+.rich-sep {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0 3px;
+}
+
+.rich-content {
+  min-height: 80px;
+  padding: 0.6rem 0.8rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: #e4e4e8;
+  line-height: 1.6;
+  outline: none;
+  overflow-y: auto;
+  max-height: 300px;
+  word-break: break-word;
+}
+
+.rich-content:empty::before {
+  content: attr(data-placeholder);
+  color: #33333d;
+  pointer-events: none;
+}
+
+.rich-content b, .rich-content strong { font-weight: 700; }
+.rich-content i, .rich-content em { font-style: italic; }
+.rich-content u { text-decoration: underline; }
+.rich-content s, .rich-content strike { text-decoration: line-through; }
+
+.rich-content ul, .rich-content ol {
+  margin: 0.3rem 0;
+  padding-left: 1.5rem;
+}
+
+.rich-content li {
+  margin-bottom: 0.15rem;
+}
+
 /* ═══ Update view ═══ */
 #view-update {
   padding: 1.5rem 0 4rem;
@@ -1306,6 +1397,23 @@ input:focus, textarea:focus {
   .auth-box .btn-save {
     padding: 0.8rem 1.5rem;
     font-size: 0.88rem;
+  }
+
+  /* ── Rich editor ── */
+  .rich-toolbar {
+    gap: 1px;
+    padding: 0.3rem 0.35rem;
+  }
+
+  .rich-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .rich-content {
+    font-size: 16px;
+    min-height: 90px;
+    padding: 0.7rem 0.85rem;
   }
 
   /* ── Toggle ── */

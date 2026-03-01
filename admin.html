@@ -216,8 +216,20 @@
           <div class="form-grid">
             <div class="field full"><label>Название</label><input type="text" id="servicesF-title"></div>
             <div class="field"><label>Цена</label><input type="text" id="servicesF-price"></div>
-            <div class="field full"><label>Короткое описание (карточка)</label><textarea rows="3" id="servicesF-shortDesc"></textarea></div>
-            <div class="field full"><label>Полное описание (модалка)</label><textarea rows="4" id="servicesF-desc"></textarea></div>
+            <div class="field full">
+              <label>Короткое описание (карточка)</label>
+              <div class="rich-editor">
+                <div class="rich-toolbar"></div>
+                <div class="rich-content" contenteditable="true" id="servicesF-shortDesc" data-placeholder="Краткое описание услуги..."></div>
+              </div>
+            </div>
+            <div class="field full">
+              <label>Полное описание (модалка)</label>
+              <div class="rich-editor">
+                <div class="rich-toolbar"></div>
+                <div class="rich-content" contenteditable="true" id="servicesF-desc" data-placeholder="Подробное описание услуги..."></div>
+              </div>
+            </div>
           </div>
         </section>
         <section class="admin-section">
@@ -272,8 +284,20 @@
           <div class="form-grid">
             <div class="field full"><label>Название</label><input type="text" id="channelsF-title"></div>
             <div class="field"><label>Цена</label><input type="text" id="channelsF-price"></div>
-            <div class="field full"><label>Короткое описание (карточка)</label><textarea rows="3" id="channelsF-shortDesc"></textarea></div>
-            <div class="field full"><label>Полное описание (модалка)</label><textarea rows="4" id="channelsF-desc"></textarea></div>
+            <div class="field full">
+              <label>Короткое описание (карточка)</label>
+              <div class="rich-editor">
+                <div class="rich-toolbar"></div>
+                <div class="rich-content" contenteditable="true" id="channelsF-shortDesc" data-placeholder="Краткое описание канала..."></div>
+              </div>
+            </div>
+            <div class="field full">
+              <label>Полное описание (модалка)</label>
+              <div class="rich-editor">
+                <div class="rich-toolbar"></div>
+                <div class="rich-content" contenteditable="true" id="channelsF-desc" data-placeholder="Подробное описание канала..."></div>
+              </div>
+            </div>
           </div>
         </section>
         <section class="admin-section">
@@ -453,6 +477,62 @@
 
     function esc(s) { return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;"); }
 
+    /* ── Rich text editor ── */
+    const TOOLBAR_BTNS = [
+      { cmd: "bold", icon: "<b>B</b>", title: "Жирный" },
+      { cmd: "italic", icon: "<i>I</i>", title: "Курсив" },
+      { cmd: "underline", icon: "<u>U</u>", title: "Подчёркнутый" },
+      { cmd: "strikeThrough", icon: "<s>S</s>", title: "Зачёркнутый" },
+      { sep: true },
+      { cmd: "justifyLeft", icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h10.5M3.75 17.25h16.5"/></svg>', title: "По левому краю" },
+      { cmd: "justifyCenter", icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M6.75 12h10.5M3.75 17.25h16.5"/></svg>', title: "По центру" },
+      { cmd: "justifyRight", icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M9.75 12h10.5M3.75 17.25h16.5"/></svg>', title: "По правому краю" },
+      { sep: true },
+      { cmd: "insertUnorderedList", icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12M8.25 17.25h12M3.75 6.75h.007v.008H3.75V6.75Zm0 5.25h.007v.008H3.75V12Zm0 5.25h.007v.008H3.75v-.008Z"/></svg>', title: "Маркированный список" },
+      { cmd: "insertOrderedList", icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M8.242 5.992h12m-12 6.003h12m-12 5.999h12M4.117 7.495v-3.75H2.99m1.125 3.75H2.99m1.125 0H4.74m-1.5 6.003H5.36m-2.865 0h3.429M3.554 15.998l1.064-1.43m-1.064 1.43h-.063m.063 0L2.49 17.25m2.115-1.252 1.064-1.43"/></svg>', title: "Нумерованный список" },
+      { sep: true },
+      { cmd: "removeFormat", icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>', title: "Очистить формат" },
+    ];
+
+    function initToolbars() {
+      document.querySelectorAll(".rich-toolbar").forEach(toolbar => {
+        if (toolbar.children.length) return;
+        const content = toolbar.nextElementSibling;
+        TOOLBAR_BTNS.forEach(btn => {
+          if (btn.sep) {
+            const sep = document.createElement("span");
+            sep.className = "rich-sep";
+            toolbar.appendChild(sep);
+            return;
+          }
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "rich-btn";
+          b.title = btn.title;
+          b.innerHTML = btn.icon;
+          b.addEventListener("mousedown", e => e.preventDefault());
+          b.addEventListener("click", () => {
+            content.focus();
+            document.execCommand(btn.cmd, false, null);
+          });
+          toolbar.appendChild(b);
+        });
+      });
+    }
+    initToolbars();
+
+    function getRichValue(id) {
+      const el = document.getElementById(id);
+      if (!el) return "";
+      const html = el.innerHTML.trim();
+      return html === "<br>" || html === '<div><br></div>' ? "" : html;
+    }
+
+    function setRichValue(id, html) {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html || "";
+    }
+
     /* ── View switching ── */
     const pills = document.querySelectorAll(".nav-pill");
     const mobBtns = document.querySelectorAll(".mob-nav-btn");
@@ -536,8 +616,8 @@
 
       document.getElementById(section + "F-title").value = item.title || "";
       document.getElementById(section + "F-price").value = item.price || "";
-      document.getElementById(section + "F-shortDesc").value = item.shortDesc || "";
-      document.getElementById(section + "F-desc").value = item.desc || "";
+      setRichValue(section + "F-shortDesc", item.shortDesc || "");
+      setRichValue(section + "F-desc", item.desc || "");
 
       const cb = document.getElementById(section + "F-featured");
       cb.checked = !!item.featured;
@@ -568,8 +648,8 @@
       const item = state[section][idx];
       item.title = document.getElementById(section + "F-title").value;
       item.price = document.getElementById(section + "F-price").value;
-      item.shortDesc = document.getElementById(section + "F-shortDesc").value;
-      item.desc = document.getElementById(section + "F-desc").value;
+      item.shortDesc = getRichValue(section + "F-shortDesc");
+      item.desc = getRichValue(section + "F-desc");
       item.featured = document.getElementById(section + "F-featured").checked;
       item.badge = item.featured ? document.getElementById(section + "F-badge").value : "";
 

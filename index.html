@@ -144,23 +144,23 @@
       const icon = ICONS[idx % ICONS.length];
       if (isFeatured) {
         const badgeHtml = item.badge ? `<div class="featured-badge">${esc(item.badge)}</div>` : "";
-        return `<div class="card featured fade-up stagger-${idx+1}" data-modal data-title="${esc(item.title)}" data-price="${esc(item.price)}" data-desc="${esc(item.desc)}">
+        return `<div class="card featured fade-up stagger-${idx+1}" data-modal data-title="${esc(item.title)}" data-price="${esc(item.price)}" data-idx="${idx}">
           <div class="featured-left">
             ${badgeHtml}
             <div class="card-icon">${icon}</div>
             <h3>${esc(item.title)}</h3>
-            <p>${esc(item.shortDesc)}</p>
+            <div class="card-desc">${item.shortDesc || ""}</div>
           </div>
           <div class="featured-right">
             <div class="card-price">${esc(item.price)}</div>
           </div>
         </div>`;
       }
-      return `<div class="card fade-up stagger-${idx+1}" data-modal data-title="${esc(item.title)}" data-price="${esc(item.price)}" data-desc="${esc(item.desc)}">
+      return `<div class="card fade-up stagger-${idx+1}" data-modal data-title="${esc(item.title)}" data-price="${esc(item.price)}" data-idx="${idx}">
         <div class="card-number">${num}</div>
         <div class="card-icon">${icon}</div>
         <h3>${esc(item.title)}</h3>
-        <p>${esc(item.shortDesc)}</p>
+        <div class="card-desc">${item.shortDesc || ""}</div>
         <div class="card-bottom">
           <div class="card-price">${esc(item.price)}</div>
           <div class="card-arrow">${ARROW}</div>
@@ -168,7 +168,10 @@
       </div>`;
     }
 
+    const gridData = {};
+
     function renderGrid(gridId, items) {
+      gridData[gridId] = items;
       const g = document.getElementById(gridId);
       g.innerHTML = items.map((it, i) => buildCard(it, i, !!it.featured)).join("");
     }
@@ -218,9 +221,12 @@
       document.querySelectorAll("[data-modal]").forEach(card => {
         card.style.cursor = "pointer";
         card.addEventListener("click", () => {
+          const gridId = card.closest(".services")?.id;
+          const idx = parseInt(card.dataset.idx, 10);
+          const item = gridData[gridId]?.[idx];
           modalTitle.textContent = card.dataset.title;
           modalPrice.textContent = card.dataset.price;
-          modalDesc.textContent = card.dataset.desc;
+          modalDesc.innerHTML = item?.desc || "";
           modalTgLink.href = buildTgLink(card.dataset.title, card.dataset.price);
           modal.classList.add("active");
           document.body.style.overflow = "hidden";

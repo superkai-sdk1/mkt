@@ -354,12 +354,18 @@ section { padding: 6rem 2rem; }
   letter-spacing: -0.01em;
 }
 
-.card p {
+.card p, .card-desc {
   font-size: 0.9rem;
   color: var(--text-secondary);
   line-height: 1.6;
   flex: 1;
 }
+
+.card-desc b, .card-desc strong { font-weight: 700; color: var(--text); }
+.card-desc i, .card-desc em { font-style: italic; }
+.card-desc u { text-decoration: underline; }
+.card-desc ul, .card-desc ol { margin: 0.2rem 0; padding-left: 1.3rem; }
+.card-desc li { margin-bottom: 0.1rem; }
 
 .card-bottom {
   display: flex;
@@ -717,6 +723,12 @@ footer {
   margin-bottom: 2rem;
 }
 
+.modal-desc b, .modal-desc strong { font-weight: 700; color: var(--text); }
+.modal-desc i, .modal-desc em { font-style: italic; }
+.modal-desc u { text-decoration: underline; }
+.modal-desc ul, .modal-desc ol { margin: 0.4rem 0; padding-left: 1.4rem; }
+.modal-desc li { margin-bottom: 0.2rem; }
+
 .modal-btn {
   width: 100%;
   justify-content: center;
@@ -777,7 +789,7 @@ footer {
 
   .card-icon svg { width: 18px; height: 18px; }
   .card h3 { font-size: 0.85rem; }
-  .card p { display: none; }
+  .card p, .card-desc { display: none; }
 
   .card-bottom {
     margin-top: 0.4rem;
