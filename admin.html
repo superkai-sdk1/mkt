@@ -298,6 +298,8 @@
                 <div class="rich-content" contenteditable="true" id="channelsF-desc" data-placeholder="Подробное описание канала..."></div>
               </div>
             </div>
+            <div class="field full"><label>Ссылка на канал</label><input type="url" id="channelsF-link" placeholder="https://t.me/+abc123..."></div>
+            <div class="field full"><label>Текст кнопки (если есть ссылка)</label><input type="text" id="channelsF-linkText" placeholder="Перейти в канал"></div>
           </div>
         </section>
         <section class="admin-section">
@@ -624,6 +626,11 @@
       document.getElementById(section + "F-badge").value = item.badge || "";
       document.getElementById(section + "F-featuredFields").style.display = item.featured ? "" : "none";
 
+      const linkEl = document.getElementById(section + "F-link");
+      const linkTextEl = document.getElementById(section + "F-linkText");
+      if (linkEl) linkEl.value = item.link || "";
+      if (linkTextEl) linkTextEl.value = item.linkText || "";
+
       document.getElementById(section + "EditTitle").textContent = item.title || "Новая запись";
 
       document.getElementById(section + "List-list").classList.remove("active");
@@ -652,6 +659,11 @@
       item.desc = getRichValue(section + "F-desc");
       item.featured = document.getElementById(section + "F-featured").checked;
       item.badge = item.featured ? document.getElementById(section + "F-badge").value : "";
+
+      const linkEl = document.getElementById(section + "F-link");
+      const linkTextEl = document.getElementById(section + "F-linkText");
+      if (linkEl) item.link = linkEl.value.trim();
+      if (linkTextEl) item.linkText = linkTextEl.value.trim();
 
       try {
         await API.post("/api/" + section, state[section]);
